@@ -24,7 +24,6 @@ class QualificationSerializer(serializers.Serializer):
 class ProjectSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=255, required=False)
     description = serializers.CharField(max_length=500, required=False)
-    photo = serializers.CharField(max_length=1000, required=False)  # Adjust length as needed for base64
 
 # Main Serializer for Employee
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -38,7 +37,7 @@ class EmployeeSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'email', 'age', 'gender', 'phoneNo',
             'addressDetails', 'workExperience', 'qualifications',
-            'projects'
+            'projects','photo'
         ]
 
     def create(self, validated_data):

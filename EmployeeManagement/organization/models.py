@@ -10,7 +10,7 @@ class Employee(models.Model):
     workExperience = models.JSONField(blank=True,null=True)  # For Work Experience list of dictionaries
     qualifications = models.JSONField(blank=True,null=True)  # For Qualifications list of dictionaries
     projects = models.JSONField(blank=True,null=True)  # For Projects list of dictionaries
-    # photo = models.TextField(blank=True, null=True)  # Store base64 image data
+    photo = models.ImageField(upload_to='photos/', blank=True, null=True)
 
     def __str__(self):  
         return self.name
