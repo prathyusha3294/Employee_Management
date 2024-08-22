@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Employee Management</h2>
+    <div class="d-flex justify-content-end mb-4">
+        <button class="btn btn-primary" data-toggle="modal" data-target="#employeeModal">Add Employee</button>
+    </div>
+
+    <table class="table table-bordered">
+        <thead class="thead-light">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Phone No</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="employeeTableBody"></tbody>
+    </table>
+</div>
+
+<!-- Employee Modal -->
+<div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="employeeModalLabel">Create Employee</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="createEmployeeForm">
+                    <input type="hidden" name="employeeId">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="name">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="age">Age</label>
+                            <input type="number" class="form-control" id="age" name="age" required>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="gender">Gender</label>
+                            <select class="form-control" id="gender" name="gender" required>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="phoneNo">Phone No</label>
+                            <input type="text" class="form-control" id="phoneNo" name="phoneNo" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="address_hno">House No</label>
+                            <input type="text" class="form-control" id="address_hno" name="address_hno" required>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="address_street">Street</label>
+                            <input type="text" class="form-control" id="address_street" name="address_street" required>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="address_city">City</label>
+                            <input type="text" class="form-control" id="address_city" name="address_city" required>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="address_state">State</label>
+                            <input type="text" class="form-control" id="address_state" name="address_state" required>
+                        </div>
+                    </div>
+
+                    <div id="workExperienceSection" class="mb-3">
+                        <h5>Work Experience</h5>
+                        <div class="workExperienceEntry">
+                            <input type="text" name="workExperience_company_name" class="form-control" placeholder="Company Name" required>
+                            <input type="date" name="workExperience_from_date" class="form-control" placeholder="From Date" required>
+                            <input type="date" name="workExperience_to_date" class="form-control" placeholder="To Date" required>
+                            <input type="text" name="workExperience_address" class="form-control" placeholder="Address" required>
+                        </div>
+                    </div>
+                    <button type="button" id="addWorkExperience" class="btn btn-secondary mb-3">Add Work Experience</button>
+
+                    <div id="qualificationsSection" class="mb-3">
+                        <h5>Qualifications</h5>
+                        <div class="qualificationEntry">
+                            <input type="text" name="qualification_name" class="form-control" placeholder="Qualification Name" required>
+                            <input type="number" name="qualification_percentage" class="form-control" placeholder="Percentage" step="0.1" required>
+                        </div>
+                    </div>
+                    <button type="button" id="addQualification" class="btn btn-secondary mb-3">Add Qualification</button>
+
+                    <div id="projectsSection" class="mb-3">
+                        <h5>Projects</h5>
+                        <div class="projectEntry">
+                            <input type="text" name="project_title" class="form-control" placeholder="Project Title" required>
+                            <textarea name="project_description" class="form-control" placeholder="Project Description" required></textarea>
+                        </div>
+                    </div>
+                    <button type="button" id="addProject" class="btn btn-secondary mb-3">Add Project</button>
+
+                    {% comment %} <div class="form-group">
+                        <label for="photo">Photo</label>
+                        <input type="file" class="form-control" id="photo" name="photo" required>
+                    </div> {% endcomment %}
+
+                    <button type="submit" class="btn btn-primary">Save Employee</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        loadEmployeeList();
+
+        function loadEmployeeList() {
+            $.ajax({
+                url: '/api/master/employee/',
+                method: 'GET',
+                success: function(data) {
+                    const tableBody = data.map(employee => `
+                        <tr>
+                            <td>${employee.id}</td>
+                            <td>${employee.name}</td>
+                            <td>${employee.email}</td>
+                            <td>${employee.age}</td>
+                            <td>${employee.gender}</td>
+                            <td>${employee.phoneNo}</td>
+                            <td>
+                                <button class="btn btn-info btn-sm" onclick="editEmployee(${employee.id})">Edit</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteEmployee(${employee.id})">Delete</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                    $('#employeeTableBody').html(tableBody);
+                },
+                error: function(error) {
+                    alert('Failed to load employee list: ' + (error.responseJSON.error || 'Unknown error'));
+                }
+            });
+        }
+
+        $('#createEmployeeForm').on('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const employeeId = formData.get('employeeId');
+            const method = employeeId ? 'PUT' : 'POST'; // Use PUT if editing
+            const url = employeeId ? `/api/master/employee/${employeeId}/` : '/api/master/employee/';
+
+            const addressDetails = {
+                hno: formData.get('address_hno'),
+                street: formData.get('address_street'),
+                city: formData.get('address_city'),
+                state: formData.get('address_state')
+            };
+            formData.append('addressDetails', JSON.stringify(addressDetails));
+
+            formData.append('workExperience', JSON.stringify([
+                {
+                    company_name: formData.get('workExperience_company_name'),
+                    from_date: formData.get('workExperience_from_date'),
+                    to_date: formData.get('workExperience_to_date'),
+                    address: formData.get('workExperience_address')
+                }
+            ]));
+
+            formData.append('qualifications', JSON.stringify([
+                {
+                    qualification_name: formData.get('qualification_name'),
+                    percentage: formData.get('qualification_percentage')
+                }
+            ]));
+
+            formData.append('projects', JSON.stringify([
+                {
+                    title: formData.get('project_title'),
+                    description: formData.get('project_description'),
+                }
+            ]));
+
+            {% comment %} formData.append('photo', formData.get('photo')); {% endcomment %}
+
+            $.ajax({
+                url: url,
+                method: method,
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function(response) {
+                    alert(response.message || 'Employee saved successfully');
+                    $('#employeeModal').modal('hide');
+                    loadEmployeeList();
+                },
+                error: function(error) {
+                    alert('Failed to save employee: ' + (error.responseJSON.error || 'Unknown error'));
+                }
+            });
+        });
+
+        window.editEmployee = function(id) {
+            $.ajax({
+                url: `/api/master/employee/${id}/`,
+                method: 'GET',  // Use GET to retrieve data
+                success: function(data) {
+                    // Populate simple fields
+                    $('#createEmployeeForm').find('[name="employeeId"]').val(data.id);
+                    $('#createEmployeeForm').find('[name="name"]').val(data.name);
+                    $('#createEmployeeForm').find('[name="email"]').val(data.email);
+                    $('#createEmployeeForm').find('[name="age"]').val(data.age);
+                    $('#createEmployeeForm').find('[name="gender"]').val(data.gender);
+                    $('#createEmployeeForm').find('[name="phoneNo"]').val(data.phoneNo);
+        
+                    // Populate address details
+                    if (data.addressDetails) {
+                        $('#createEmployeeForm').find('[name="address_hno"]').val(data.addressDetails.hno);
+                        $('#createEmployeeForm').find('[name="address_street"]').val(data.addressDetails.street);
+                        $('#createEmployeeForm').find('[name="address_city"]').val(data.addressDetails.city);
+                        $('#createEmployeeForm').find('[name="address_state"]').val(data.addressDetails.state);
+                    }
+        
+                    // Clear existing work experiences, qualifications, and projects
+                    $('#workExperienceSection').empty();
+                    $('#qualificationsSection').empty();
+                    $('#projectsSection').empty();
+        
+                    // Populate work experience
+                    if (data.workExperience) {
+                        data.workExperience.forEach(exp => {
+                            const workExperienceHtml = `
+                                <div class="workExperienceEntry mt-3">
+                                    <input type="text" name="workExperience_company_name" class="form-control" value="${exp.company_name}" placeholder="Company Name" required>
+                                    <input type="date" name="workExperience_from_date" class="form-control" value="${exp.from_date}" placeholder="From Date" required>
+                                    <input type="date" name="workExperience_to_date" class="form-control" value="${exp.to_date}" placeholder="To Date" required>
+                                    <input type="text" name="workExperience_address" class="form-control" value="${exp.address}" placeholder="Address" required>
+                                    <button type="button" class="btn btn-danger mt-2 removeWorkExperience">Remove</button>
+                                </div>`;
+                            $('#workExperienceSection').append(workExperienceHtml);
+                        });
+                    }
+        
+                    // Populate qualifications
+                    if (data.qualifications) {
+                        data.qualifications.forEach(qual => {
+                            const qualificationHtml = `
+                                <div class="qualificationEntry mt-3">
+                                    <input type="text" name="qualification_name" class="form-control" value="${qual.qualification_name}" placeholder="Qualification Name" required>
+                                    <input type="number" name="qualification_percentage" class="form-control" value="${qual.percentage}" placeholder="Percentage" step="0.1" required>
+                                    <button type="button" class="btn btn-danger mt-2 removeQualification">Remove</button>
+                                </div>`;
+                            $('#qualificationsSection').append(qualificationHtml);
+                        });
+                    }
+        
+                    // Populate projects
+                    if (data.projects) {
+                        data.projects.forEach(proj => {
+                            const projectHtml = `
+                                <div class="projectEntry mt-3">
+                                    <input type="text" name="project_title" class="form-control" value="${proj.title}" placeholder="Project Title" required>
+                                    <textarea name="project_description" class="form-control" placeholder="Project Description" required>${proj.description}</textarea>
+                                    <button type="button" class="btn btn-danger mt-2 removeProject">Remove</button>
+                                </div>`;
+                            $('#projectsSection').append(projectHtml);
+                        });
+                    }
+        
+                    $('#employeeModalLabel').text('Edit Employee');
+                    $('#employeeModal').modal('show');
+                },
+                error: function(error) {
+                    alert('Failed to load employee data: ' + (error.responseJSON.error || 'Unknown error'));
+                }
+            });
+        };        
+        
+
+        window.deleteEmployee = function(id) {
+            if (!confirm('Are you sure you want to delete this employee?')) return;
+
+            $.ajax({
+                url: `/api/master/employee/${id}/`,
+                method: 'DELETE',
+                success: function(response) {
+                    alert(response.message || 'Employee deleted successfully');
+                    loadEmployeeList();
+                },
+                error: function(error) {
+                    alert('Failed to delete employee: ' + (error.responseJSON.error || 'Unknown error'));
+                }
+            });
+        };
+
+        $('#addWorkExperience').on('click', function() {
+            const workExperienceHtml = `
+                <div class="workExperienceEntry mt-3">
+                    <input type="text" name="workExperience_company_name" class="form-control" placeholder="Company Name" required>
+                    <input type="date" name="workExperience_from_date" class="form-control" placeholder="From Date" required>
+                    <input type="date" name="workExperience_to_date" class="form-control" placeholder="To Date" required>
+                    <input type="text" name="workExperience_address" class="form-control" placeholder="Address" required>
+                    <button type="button" class="btn btn-danger mt-2 removeWorkExperience">Remove</button>
+                </div>`;
+            $('#workExperienceSection').append(workExperienceHtml);
+        });
+
+        $('#addQualification').on('click', function() {
+            const qualificationHtml = `
+                <div class="qualificationEntry mt-3">
+                    <input type="text" name="qualification_name" class="form-control" placeholder="Qualification Name" required>
+                    <input type="number" name="qualification_percentage" class="form-control" placeholder="Percentage" step="0.1" required>
+                    <button type="button" class="btn btn-danger mt-2 removeQualification">Remove</button>
+                </div>`;
+            $('#qualificationsSection').append(qualificationHtml);
+        });
+
+        $('#addProject').on('click', function() {
+            const projectHtml = `
+                <div class="projectEntry mt-3">
+                    <input type="text" name="project_title" class="form-control" placeholder="Project Title" required>
+                    <textarea name="project_description" class="form-control" placeholder="Project Description" required></textarea>
+                    <input type="file" name="project_photo" class="form-control" required>
+                    <button type="button" class="btn btn-danger mt-2 removeProject">Remove</button>
+                </div>`;
+            $('#projectsSection').append(projectHtml);
+        });
+
+        $(document).on('click', '.removeWorkExperience', function() {
+            $(this).closest('.workExperienceEntry').remove();
+        });
+
+        $(document).on('click', '.removeQualification', function() {
+            $(this).closest('.qualificationEntry').remove();
+        });
+
+        $(document).on('click', '.removeProject', function() {
+            $(this).closest('.projectEntry').remove();
+        });
+    });
+</script>
+
+</body>
+</html>
